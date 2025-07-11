@@ -26,10 +26,10 @@ def cli():
     "--download-path",
     "-path"
     type=str,
-    default="./data/",
+    default="data",
     required=False,
     help="""
-    (Optional) The path for downloading the arXiv PDFs. Defaults to "./data/".
+    (Optional) The path for downloading the arXiv PDFs. Defaults to "data".
     """,
 )
 # add more options: regex pattern, n papers, etc
