@@ -70,25 +70,29 @@ def run_search_and_download(
     extractor = TextExtractor(logger=logger)
 
     pattern_files, pattern_papers = [], []
-    for _ in n_papers:
-        papers = fetcher.fetch()
-        for paper in papers:
-            pdf_path = downloader.download_pdf(arxiv_paper=paper)
-            text = extractor.get_text(pdf_path=pdf_path, loader=loader)
-            if not text:
-                logger.info("No text extracted from the PDF.")
-                continue
+    with click.progressbar(
+        length=n_papers, label="Downloading and processing papers"
+    ) as bar:
+        while len(pattern_papers) < n_papers:
+            papers = fetcher.fetch()
+            for paper in papers:
+                pdf_path = downloader.download_pdf(arxiv_paper=paper)
+                text = extractor.get_text(pdf_path=pdf_path, loader=loader)
+                if not text:
+                    logger.info("No text extracted from the PDF.")
+                    continue
 
-            # Deleting downloaded PDFS that do not match the regex pattern
-            if regex_pattern and not regex_pattern.search(text):
-                pdf_path.unlink()
-                continue
+                # Deleting downloaded PDFS that do not match the regex pattern
+                if regex_pattern and not regex_pattern.search(text):
+                    pdf_path.unlink()
+                    continue
 
-            # If the paper matches the regex_pattern, store text in the corresponding ArxivPaper object
-            paper.text = text
+                # If the paper matches the regex_pattern, store text in the corresponding ArxivPaper object
+                paper.text = text
 
-            pattern_files.append(pdf_path)
-            pattern_papers.append(paper)
+                pattern_files.append(pdf_path)
+                pattern_papers.append(paper)
+                bar.update(1)
     return pattern_files, pattern_papers
 
 
