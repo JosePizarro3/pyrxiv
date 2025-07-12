@@ -1,3 +1,4 @@
+import re
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -19,7 +20,7 @@ def run_search_and_download(
     n_papers: int = 5,
     regex_pattern: str = "",
     start_id: str | None = None,
-    start_from_file: bool = False,
+    start_from_filepath: bool = False,
     loader: str = "pdfminer",
 ) -> tuple[list[Path], list["ArxivPaper"]]:
     """
@@ -28,7 +29,7 @@ def run_search_and_download(
 
     If `regex_pattern` is specified, only the papers that contain the pattern will be downloaded.
     If `start_id` is specified, the search will start from that ID.
-    If `start_from_file` is True, the search will start from the last downloaded paper's ID.
+    If `start_from_filepath` is True, the search will start from the last downloaded paper's ID.
     If `loader` is specified, the text will be extracted using the corresponding loader.
 
 
@@ -40,7 +41,7 @@ def run_search_and_download(
         regex_pattern (str, optional): If specified, this regex pattern is searched in the arXiv papers so only the ones with
             the corresponding match will be downloaded. Defaults to "".
         start_id (str | None, optional): If specified, the search will start from this arXiv ID. Defaults to None.
-        start_from_file (bool, optional): If True, the search will start from the last downloaded arXiv ID. Otherwise, it will start from the
+        start_from_filepath (bool, optional): If True, the search will start from the last downloaded arXiv ID. Otherwise, it will start from the
             newest papers in the `category`. Defaults to False.
         loader (str, optional): PDF loader to use for extracting text from the downloaded PDFs.
             Defaults to "pdfminer". Available loaders: "pdfminer", "pypdf".
@@ -63,7 +64,7 @@ def run_search_and_download(
         download_path=download_path,
         category=category,
         start_id=start_id,
-        start_from_file=start_from_file,
+        start_from_filepath=start_from_filepath,
         logger=logger,
     )
     downloader = ArxivDownloader(download_path=download_path, logger=logger)
@@ -83,7 +84,8 @@ def run_search_and_download(
                     continue
 
                 # Deleting downloaded PDFS that do not match the regex pattern
-                if regex_pattern and not regex_pattern.search(text):
+                regex = re.compile(regex_pattern) if regex_pattern else None
+                if regex and not regex.search(text):
                     pdf_path.unlink()
                     continue
 
@@ -96,7 +98,7 @@ def run_search_and_download(
     return pattern_files, pattern_papers
 
 
-@click.group(help="Entry point to run `bam_masterdata` CLI commands.")
+@click.group(help="Entry point to run `pyrxiv` CLI commands.")
 def cli():
     pass
 
@@ -184,7 +186,7 @@ def search_and_download(
     n_papers,
     regex_pattern,
     start_id,
-    start_from_file,
+    start_from_filepath,
     loader,
 ):
     start_time = time.time()
@@ -195,7 +197,7 @@ def search_and_download(
         n_papers=n_papers,
         regex_pattern=regex_pattern,
         start_id=start_id,
-        start_from_file=start_from_file,
+        start_from_filepath=start_from_filepath,
         loader=loader,
     )
 

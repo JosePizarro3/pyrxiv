@@ -122,8 +122,8 @@ class ArxivFetcher:
         """
         papers = []
         start_index = 0
-        while len(papers) < self.n_papers:
-            remaining = self.n_papers - len(papers)  # remaining papers to fetch
+        while len(papers) < self.max_results:
+            remaining = self.max_results - len(papers)  # remaining papers to fetch
             current_batch_size = min(self.max_results, remaining)
 
             url = (
@@ -220,7 +220,7 @@ class ArxivFetcher:
                 self.logger.info(f"Paper {arxiv_id} fetched from arXiv.")
 
                 # Making sure we do not exceed the number of papers to fetch
-                if len(papers) >= self.n_papers:
+                if len(papers) >= self.max_results:
                     break
 
             # safeguard: break if no valid papers were added in this batch

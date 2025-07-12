@@ -30,6 +30,8 @@ dependencies = [
   "structlog~=24.4.0",
   "requests",
   "xmltodict",
+  "pypdf",
+  "pdfminer.six",
   "langchain-community",
 ]
 
