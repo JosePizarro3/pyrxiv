@@ -27,7 +27,10 @@ license = { file = "LICENSE" }
 dependencies = [
   "click",
   "pydantic~=2.10.5",
-  "structlog==24.4.0",
+  "structlog~=24.4.0",
+  "requests",
+  "xmltodict",
+  "langchain-community",
 ]
 
 [project.urls]

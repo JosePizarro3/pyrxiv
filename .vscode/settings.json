@@ -60,10 +60,10 @@
         "justMyCode": false,
         "args": [
           "search_and_download",
-          // "--category "cond-mat.str-el"
           // "--download_path "./data/"
+          // "--category "cond-mat.str-el"
           // "--n_papers 100"
-          // "--regex "Dynamical Mean-Field Theory"
+          // "--regex-pattern "Dynamical Mean-Field Theory"
         ]
       },
     ]
