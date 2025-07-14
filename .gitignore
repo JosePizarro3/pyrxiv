@@ -178,4 +178,6 @@ artifacts
 # and tmp files
 tmp/
 
-data/
+# data folder
+data/*.pdf
+data/*.txt

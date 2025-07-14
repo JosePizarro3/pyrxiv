@@ -46,7 +46,7 @@ structlog.configure(
         structlog.dev.ConsoleRenderer(),
     ],
     logger_factory=structlog.stdlib.LoggerFactory(),  # Use stdlib logger backend
-    wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
+    wrapper_class=structlog.make_filtering_bound_logger(logging.DEBUG),
 )
 
 # Create a logger instance

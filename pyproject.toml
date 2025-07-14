@@ -25,14 +25,14 @@ maintainers = [
 ]
 license = { file = "LICENSE" }
 dependencies = [
-  "click",
+  "click>=8.2.1",
   "pydantic~=2.10.5",
   "structlog~=24.4.0",
-  "requests",
-  "xmltodict",
-  "pypdf",
-  "pdfminer.six",
-  "langchain-community",
+  "requests~=2.32.4",
+  "xmltodict~=0.14.2",
+  "pypdf~=5.7.0",
+  "pdfminer.six~=20250506",
+  "langchain-community~=0.3.27",
 ]
 
 [project.urls]

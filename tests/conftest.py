@@ -1,0 +1,47 @@
+import datetime
+import os
+from pathlib import Path
+
+import pytest
+
+from pyrxiv.datamodel import ArxivPaper
+from pyrxiv.logger import log_storage
+
+if os.getenv("_PYTEST_RAISE", "0") != "0":
+
+    @pytest.hookimpl(tryfirst=True)
+    def pytest_exception_interact(call):
+        raise call.excinfo.value
+
+    @pytest.hookimpl(tryfirst=True)
+    def pytest_internalerror(excinfo):
+        raise excinfo.value
+
+
+@pytest.fixture(autouse=True)
+def cleared_log_storage():
+    """Fixture to clear the log storage before each test."""
+    log_storage.clear()
+    yield log_storage
+
+
+def clean_fetched_ids_file():
+    """Deletes the `fetched_arxiv_ids.txt` file if it exists. This is applied multiple times in test functions to ensure a clean state."""
+    path = Path("tests/data/fetched_arxiv_ids.txt")
+    if path.exists():
+        path.unlink(missing_ok=True)
+
+
+def generate_arxiv_paper(id: str = "1234.5678v1"):
+    return ArxivPaper(
+        id=id,
+        url=f"http://arxiv.org/abs/{id}",
+        pdf_url=f"http://arxiv.org/pdf/{id}",
+        title="Test Title",
+        summary="A summary or abstract.",
+        authors=[],
+        comment="",
+        categories=[],
+        updated=datetime.datetime(2024, 4, 25, 0, 0, tzinfo=datetime.timezone.utc),
+        published=datetime.datetime(2024, 4, 25, 0, 0, tzinfo=datetime.timezone.utc),
+    )
