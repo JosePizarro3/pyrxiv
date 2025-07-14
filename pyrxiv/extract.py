@@ -21,7 +21,7 @@ class TextExtractor:
             "pdfminer": PDFMinerLoader,
         }
 
-    def _check_pdf_path(self, pdf_path: str | None = ".") -> bool:
+    def _check_pdf_path(self, pdf_path: str | None | Path = ".") -> bool:
         """
         Check if the PDF path is valid.
 
@@ -39,7 +39,9 @@ class TextExtractor:
             return False
         return Path(pdf_path).exists() and pdf_path.endswith(".pdf")
 
-    def get_text(self, pdf_path: str | None = ".", loader: str = "pdfminer") -> str:
+    def get_text(
+        self, pdf_path: str | None | Path = ".", loader: str = "pdfminer"
+    ) -> str:
         """
         Extract text from the PDF file using LangChain implementation of PDF loaders.
 
@@ -54,8 +56,8 @@ class TextExtractor:
         """
         # Check if the PDF path is valid
         if not self._check_pdf_path(pdf_path=pdf_path):
-            return []
-        if isinstance(pdf_path, str):
+            return ""
+        if pdf_path is not None and isinstance(pdf_path, str):
             pdf_path = Path(pdf_path)
         filepath = pdf_path
 
@@ -64,7 +66,7 @@ class TextExtractor:
             self.logger.error(
                 f"Loader {loader} not available. Available loaders: {self.available_loaders.keys()}"
             )
-            return []
+            return ""
         loader_cls = self.available_loaders[loader](filepath)
 
         # Extract text

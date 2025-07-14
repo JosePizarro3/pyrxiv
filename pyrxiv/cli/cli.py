@@ -70,7 +70,8 @@ def run_search_and_download(
     downloader = ArxivDownloader(download_path=download_path, logger=logger)
     extractor = TextExtractor(logger=logger)
 
-    pattern_files, pattern_papers = [], []
+    pattern_files: list[Path] = []
+    pattern_papers: list[ArxivPaper] = []
     with click.progressbar(
         length=n_papers, label="Downloading and processing papers"
     ) as bar:

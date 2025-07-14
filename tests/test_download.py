@@ -29,7 +29,7 @@ class TestArxivDownloader:
         ],
     )
     def test_download_pdf(
-        self, cleared_log_storage: list, id: str, pdf_path_result: str, log_msg: str
+        self, cleared_log_storage: list, id: str, pdf_path_result: str, log_msg: dict
     ):
         """Tests the `download_pdf` method of the `ArxivFetcher` class."""
         arxiv_paper = generate_arxiv_paper(id=id)

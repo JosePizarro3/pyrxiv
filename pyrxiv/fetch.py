@@ -151,7 +151,7 @@ class ArxivFetcher:
         Returns:
             list[ArxivPaper]: A list of `ArxivPaper` objects with the metadata of the papers fetched from arXiv.
         """
-        papers = []
+        papers: list[ArxivPaper] = []
         start_index = 0
         while len(papers) < self.max_results:
             remaining = self.max_results - len(papers)  # remaining papers to fetch

@@ -32,7 +32,7 @@ class TestArxivFetcher:
     def test_init(
         self,
         start_id: str,
-        start_from_filepath: str,
+        start_from_filepath: bool,
         fetched_ids_file: str,
         result: list,
     ):
