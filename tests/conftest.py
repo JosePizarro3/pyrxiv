@@ -25,13 +25,6 @@ def cleared_log_storage():
     yield log_storage
 
 
-def clean_fetched_ids_file():
-    """Deletes the `fetched_arxiv_ids.txt` file if it exists. This is applied multiple times in test functions to ensure a clean state."""
-    path = Path("tests/data/fetched_arxiv_ids.txt")
-    if path.exists():
-        path.unlink(missing_ok=True)
-
-
 def generate_arxiv_paper(id: str = "1234.5678v1"):
     return ArxivPaper(
         id=id,

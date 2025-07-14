@@ -44,6 +44,8 @@ class ArxivFetcher:
 
         # check if `download_path` exists, and if not, create it
         download_path.mkdir(parents=True, exist_ok=True)
+        if not fetched_ids_file:
+            fetched_ids_file = "fetched_arxiv_ids.txt"
         self.fetched_ids_file = download_path / fetched_ids_file
 
         # The starting arXiv ID to fetch papers from.
@@ -60,18 +62,20 @@ class ArxivFetcher:
 
         self.logger = kwargs.get("logger", logger)
 
-    def _last_fetched_id(self, fetched_ids_file: Path) -> str:
+    def _last_fetched_id(self, fetched_ids_file: str | Path) -> str:
         """
         Gets the last fetched arXiv ID from the specified file.
 
         Args:
-            fetched_ids_file (Path): The path to the file containing the fetched arXiv IDs.
+            fetched_ids_file (str | Path): The path to the file containing the fetched arXiv IDs.
 
         Returns:
             str: The last fetched arXiv ID from the file. If the file is empty or does not exist, returns an empty string.
         """
         if not fetched_ids_file:
             return ""
+        if isinstance(fetched_ids_file, str):
+            fetched_ids_file = Path(fetched_ids_file)
 
         last_id = ""
         with fetched_ids_file.open("r", encoding="utf-8") as f:
@@ -90,7 +94,7 @@ class ArxivFetcher:
             tuple[int | None, int | None]: A tuple containing the number of pages and figures.
                 If not found, returns (None, None).
         """
-        pattern = r"(\d+) *pages*, *(\d+) *figures*"
+        pattern = r" *(\d+) *pages *, *(\d+) *figures *"
         match = re.search(pattern, comment)
         if match:
             n_pages, n_figures = match.groups()
@@ -101,16 +105,39 @@ class ArxivFetcher:
         """
         Checks if the given `paper_id` is newer than the `reference_id`.
 
-        Args:
-            paper_id (str): The arXiv ID of the paper to check.
-            reference_id (str): The reference arXiv ID to compare against.
+        Supports arXiv IDs of the form 'yymm.number[vN]' (e.g., '2507.02753v1').
 
         Returns:
-            bool: True if `paper_id` is newer than `reference_id`, False otherwise.
+            True if `paper_id` is newer than `reference_id`, False otherwise.
         """
-        yymm1, num1 = paper_id.split(".")
-        yymm2, num2 = reference_id.split(".")
-        return (yymm1, int(num1)) > (yymm2, int(num2))
+
+        def normalize(arxiv_id: str) -> tuple[int | None, int | None]:
+            match = re.match(r"^(\d{4})\.(\d{5})", arxiv_id)
+            if not match:
+                return None, None
+            return int(match.group(1)), int(match.group(2))
+
+        if not paper_id or not reference_id:
+            self.logger.error("Both paper_id and reference_id must be provided.")
+            return False
+
+        paper_id_norm = normalize(paper_id)
+        reference_id_norm = normalize(reference_id)
+        if all(t_paper is None for t_paper in paper_id_norm) or all(
+            t_ref is None for t_ref in reference_id_norm
+        ):
+            self.logger.error(
+                f"Invalid arXiv ID format: paper_id={paper_id}, reference_id={reference_id}"
+            )
+            return False
+
+        # If the year is the same, compare the number
+        if paper_id_norm[0] == reference_id_norm[0]:
+            return paper_id_norm[1] > reference_id_norm[1]
+        # If the year is different, compare the years
+        else:
+            return paper_id_norm[0] > reference_id_norm[0]
+        return False
 
     def fetch(self) -> list[ArxivPaper]:
         """
