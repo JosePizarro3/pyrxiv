@@ -139,10 +139,14 @@ class ArxivFetcher:
             return paper_id_norm[0] > reference_id_norm[0]
         return False
 
-    def fetch(self) -> list[ArxivPaper]:
+    def fetch(self, write: bool = True) -> list[ArxivPaper]:
         """
         Fetch new papers from arXiv, skipping already fetched ones, and stores their metadata in an `ArxivPaper`
         pydantic models. The newest fetched arXiv ID will be stored in `fetched_arxiv_ids.txt`.
+
+        Args:
+            write (bool, optional): If True, the fetched papers will be written to the `fetched_arxiv_ids.txt` file.
+                Defaults to True.
 
         Returns:
             list[ArxivPaper]: A list of `ArxivPaper` objects with the metadata of the papers fetched from arXiv.
@@ -262,6 +266,7 @@ class ArxivFetcher:
             start_index += self.max_results
 
         # Storing last fetched ID to the file if `start_from_filepath` is specified
-        with open(self.fetched_ids_file, "w") as f:
-            f.write(papers[-1].id)
+        if write:
+            with open(self.fetched_ids_file, "w") as f:
+                f.write(papers[-1].id)
         return papers
