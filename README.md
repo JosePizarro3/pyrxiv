@@ -2,9 +2,9 @@
 
 ![CI](https://github.com/JosePizarro3/pyrxiv/actions/workflows/actions.yml/badge.svg)
 ![Coverage](https://coveralls.io/repos/github/JosePizarro3/pyrxiv/badge.svg?branch=main)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![PyPI version](https://img.shields.io/pypi/v/pyrxiv.svg)]
-[![Python versions](https://img.shields.io/pypi/pyversions/pyrxiv.svg)]
+![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+![PyPI version](https://img.shields.io/pypi/v/pyrxiv.svg)
+![Python versions](https://img.shields.io/pypi/pyversions/pyrxiv.svg)
 
 </h4>
 
