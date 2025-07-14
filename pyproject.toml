@@ -31,7 +31,7 @@ dependencies = [
   "requests~=2.32.4",
   "xmltodict~=0.14.2",
   "pypdf~=5.7.0",
-  "pdfminer.six~=20250506",
+  "pdfminer.six",
   "langchain-community~=0.3.27",
 ]
 
