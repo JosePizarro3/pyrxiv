@@ -21,17 +21,17 @@ pip install pyrxiv
 
 ## Objective
 **pyrxiv** main objective is to provide an easy command line interface (CLI) to search and download arXiv papers which contain a specific content string matched against a regex pattern. You can use the CLI and print the options after installing the package using:
-```sh
+```bash
 pyrxiv --help
 ```
 
 or directly:
-```sh
+```bash
 pyrxiv search_and_download --help
 ```
 
 For example:
-```sh
+```bash
 pyrxiv search_and_download --category cond-mat.str-el --regex-pattern "DMFT|Hubbard" --n-papers 5
 ```
 
@@ -91,7 +91,7 @@ ruff check .
 
 Auto-format code:
 ```bash
-ruff format . --check
+ruff format .
 ```
 
 Manually fix anything Ruff cannot handle automatically.
