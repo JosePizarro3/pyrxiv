@@ -13,7 +13,7 @@ class ArxivFetcher:
 
     def __init__(
         self,
-        max_results: int = 50,
+        max_results: int = 200,
         category: str = "cond-mat.str-el",
         download_path: Path = Path("data"),
         start_id: str | None = None,
