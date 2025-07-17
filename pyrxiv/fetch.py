@@ -279,7 +279,7 @@ class ArxivFetcher:
             self.start_index += self.max_results
 
         # If the fetched results are less than the starting point, increment the start index
-        if len(papers) == 0 and self.start_index == 0:
+        if len(papers) == 0:
             self.start_index += self.max_results
 
         # Storing last fetched ID to the file if `start_from_filepath` is specified
