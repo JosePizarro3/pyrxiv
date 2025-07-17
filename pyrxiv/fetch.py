@@ -140,7 +140,6 @@ class ArxivFetcher:
         # If the year is different, compare the years
         else:
             return paper_id_norm[0] > reference_id_norm[0]
-        return False
 
     def fetch(
         self,
