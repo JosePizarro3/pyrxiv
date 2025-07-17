@@ -258,7 +258,7 @@ class TestArxivFetcher:
         mock_urlopen.return_value = mock_response
 
         fetcher = ArxivFetcher(max_results=1, download_path=Path("tests/data"))
-        papers = fetcher.fetch(write=False)
+        papers = fetcher.fetch(n_papers=1, write=False)
         if log_msg:
             assert len(cleared_log_storage) in [1, 2]
             assert cleared_log_storage[0]["level"] == log_msg["level"]
