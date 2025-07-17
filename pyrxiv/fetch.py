@@ -13,7 +13,7 @@ class ArxivFetcher:
 
     def __init__(
         self,
-        max_results: int = 100,
+        max_results: int = 50,
         category: str = "cond-mat.str-el",
         download_path: Path = Path("data"),
         start_id: str | None = None,
@@ -41,6 +41,9 @@ class ArxivFetcher:
         """
         self.max_results = max_results
         self.category = category
+
+        # Start index for fetching papers
+        self.start_index = 0
 
         # check if `download_path` exists, and if not, create it
         download_path.mkdir(parents=True, exist_ok=True)
@@ -152,14 +155,13 @@ class ArxivFetcher:
             list[ArxivPaper]: A list of `ArxivPaper` objects with the metadata of the papers fetched from arXiv.
         """
         papers: list[ArxivPaper] = []
-        start_index = 0
         while len(papers) < self.max_results:
             remaining = self.max_results - len(papers)  # remaining papers to fetch
             current_batch_size = min(self.max_results, remaining)
 
             url = (
                 f"http://export.arxiv.org/api/query?"
-                f"search_query=cat:{self.category}&start={start_index}&max_results={current_batch_size}&"
+                f"search_query=cat:{self.category}&start={self.start_index}&max_results={current_batch_size}&"
                 f"sortBy=submittedDate&sortOrder=descending"
             )
 
@@ -257,13 +259,13 @@ class ArxivFetcher:
             # safeguard: break if no valid papers were added in this batch
             if len(papers) == initial_len:
                 self.logger.warning(
-                    f"No valid papers added in batch starting at index {start_index}. "
+                    f"No valid papers added in batch starting at index {self.start_index}. "
                     "This might indicate that all were skipped (e.g. newer than start_id, invalid, etc.). Exiting loop."
                 )
                 break
 
             # Incrementing the start index for the next batch
-            start_index += self.max_results
+            self.start_index += self.max_results
 
         # Storing last fetched ID to the file if `start_from_filepath` is specified
         if write:
