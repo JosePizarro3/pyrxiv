@@ -78,7 +78,10 @@ def run_search_and_download(
         length=n_papers, label="Downloading and processing papers"
     ) as bar:
         while len(pattern_papers) < n_papers:
-            papers = fetcher.fetch()
+            papers = fetcher.fetch(
+                n_papers=n_papers,
+                n_pattern_papers=len(pattern_papers),
+            )
             for paper in papers:
                 pdf_path = downloader.download_pdf(arxiv_paper=paper)
                 text = extractor.get_text(pdf_path=pdf_path, loader=loader)

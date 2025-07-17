@@ -142,12 +142,20 @@ class ArxivFetcher:
             return paper_id_norm[0] > reference_id_norm[0]
         return False
 
-    def fetch(self, write: bool = True) -> list[ArxivPaper]:
+    def fetch(
+        self,
+        n_papers: int,
+        n_pattern_papers: int = 0,
+        write: bool = True,
+    ) -> list[ArxivPaper]:
         """
         Fetch new papers from arXiv, skipping already fetched ones, and stores their metadata in an `ArxivPaper`
         pydantic models. The newest fetched arXiv ID will be stored in `fetched_arxiv_ids.txt`.
 
         Args:
+            n_papers (int): The number of papers to fetch from arXiv.
+            n_pattern_papers (int, optional): The number of papers to fetch that match a specific regex pattern.
+                This is useful for fetching papers that match a specific pattern, e.g., "cond-mat.str-el". Defaults to 0.
             write (bool, optional): If True, the fetched papers will be written to the `fetched_arxiv_ids.txt` file.
                 Defaults to True.
 
@@ -155,7 +163,10 @@ class ArxivFetcher:
             list[ArxivPaper]: A list of `ArxivPaper` objects with the metadata of the papers fetched from arXiv.
         """
         papers: list[ArxivPaper] = []
-        while len(papers) < self.max_results:
+        while (
+            len(papers) < self.max_results
+            and (len(papers) + n_pattern_papers) < n_papers
+        ):
             remaining = self.max_results - len(papers)  # remaining papers to fetch
             current_batch_size = min(self.max_results, remaining)
 
