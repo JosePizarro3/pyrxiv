@@ -275,11 +275,15 @@ class ArxivFetcher:
                 )
                 break
 
-        # Incrementing the start index for the next batch
-        self.start_index += self.max_results
+            # Incrementing the start index for the next batch
+            self.start_index += self.max_results
+
+        # If the fetched results are less than the starting point, increment the start index
+        if len(papers) == 0 and self.start_index == 0:
+            self.start_index += self.max_results
 
         # Storing last fetched ID to the file if `start_from_filepath` is specified
-        if write:
+        if write and len(papers) > 0:
             with open(self.fetched_ids_file, "w") as f:
                 f.write(papers[-1].id)
         return papers
