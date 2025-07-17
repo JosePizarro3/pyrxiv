@@ -140,7 +140,6 @@ class ArxivFetcher:
         # If the year is different, compare the years
         else:
             return paper_id_norm[0] > reference_id_norm[0]
-        return False
 
     def fetch(
         self,
@@ -278,8 +277,12 @@ class ArxivFetcher:
             # Incrementing the start index for the next batch
             self.start_index += self.max_results
 
+        # If the fetched results are less than the starting point, increment the start index
+        if not papers:
+            self.start_index += self.max_results
+
         # Storing last fetched ID to the file if `start_from_filepath` is specified
-        if write:
+        if write and papers:
             with open(self.fetched_ids_file, "w") as f:
                 f.write(papers[-1].id)
         return papers
