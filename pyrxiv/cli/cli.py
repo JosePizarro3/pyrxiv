@@ -22,6 +22,7 @@ def run_search_and_download(
     start_id: str | None = None,
     start_from_filepath: bool = False,
     loader: str = "pdfminer",
+    clean_text: bool = True,
 ) -> tuple[list[Path], list["ArxivPaper"]]:
     """
     Searches for a specific number of papers `n_papers` in arXiv for a specified `category` and downloads
@@ -45,6 +46,7 @@ def run_search_and_download(
             newest papers in the `category`. Defaults to False.
         loader (str, optional): PDF loader to use for extracting text from the downloaded PDFs.
             Defaults to "pdfminer". Available loaders: "pdfminer", "pypdf".
+        clean_text (bool, optional): If True, the extracted text will be cleaned by removing references and unnecessary whitespaces.
 
     Returns:
         tuple[list[Path], list[ArxivPaper]]: A tuple containing a list of Paths to the downloaded PDFs and a list of ArxivPaper objects
@@ -83,6 +85,9 @@ def run_search_and_download(
                 if not text:
                     logger.info("No text extracted from the PDF.")
                     continue
+                if clean_text:
+                    text = extractor.delete_references(text=text)
+                    text = extractor.clean_text(text=text)
 
                 # Deleting downloaded PDFS that do not match the regex pattern
                 regex = re.compile(regex_pattern) if regex_pattern else None
@@ -181,6 +186,17 @@ def cli():
     Available loaders: "pdfminer", "pypdf".
     """,
 )
+@click.option(
+    "--clean-text",
+    "-ct",
+    type=bool,
+    default=True,
+    required=False,
+    help="""
+    (Optional) If True, the extracted text will be cleaned by removing references and unnecessary whitespaces.
+    Defaults to True.
+    """,
+)
 def search_and_download(
     download_path,
     category,
@@ -189,6 +205,7 @@ def search_and_download(
     start_id,
     start_from_filepath,
     loader,
+    clean_text,
 ):
     start_time = time.time()
 
@@ -200,6 +217,7 @@ def search_and_download(
         start_id=start_id,
         start_from_filepath=start_from_filepath,
         loader=loader,
+        clean_text=clean_text,
     )
 
     elapsed_time = time.time() - start_time
