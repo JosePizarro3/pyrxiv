@@ -275,8 +275,8 @@ class ArxivFetcher:
                 )
                 break
 
-            # Incrementing the start index for the next batch
-            self.start_index += self.max_results
+        # Incrementing the start index for the next batch
+        self.start_index += self.max_results
 
         # Storing last fetched ID to the file if `start_from_filepath` is specified
         if write:
