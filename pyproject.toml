@@ -33,6 +33,7 @@ dependencies = [
   "pypdf~=5.7.0",
   "pdfminer.six",
   "langchain-community~=0.3.27",
+  "h5py",
 ]
 
 [project.urls]
