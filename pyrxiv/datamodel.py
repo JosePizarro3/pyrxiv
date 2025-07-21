@@ -1,5 +1,7 @@
 import datetime
 
+import h5py
+import numpy as np
 from pydantic import BaseModel, Field
 
 
@@ -56,7 +58,29 @@ class ArxivPaper(BaseModel):
         description="The categories of the arXiv paper. Example: ['cond-mat.str-el', 'cond-mat.mtrl-sci'].",
     )
 
+    pdf_loader: str | None = Field(
+        default=None,
+        description="The name of the PDF loader used to extract the text from the PDF.",
+    )
+
     text: str = Field(
         default="",
         description="The text of the arXiv paper. It is the text of the paper after cleaning and deleting references.",
     )
+
+    def to_hdf5(self, hdf_file: h5py.File) -> h5py.Group:
+        group = hdf_file.require_group(self.id)
+        for key in self.model_fields:
+            value = getattr(self, key)
+            if key == "id":
+                continue
+            elif key in ["updated", "published"]:
+                value = getattr(self, key).isoformat() if getattr(self, key) else None
+            elif key == "authors":
+                value = [author.name for author in self.authors]
+
+            # overwrite existing dataset
+            if key in group:
+                del group[key]
+            group.create_dataset(key, data=value)
+        return group

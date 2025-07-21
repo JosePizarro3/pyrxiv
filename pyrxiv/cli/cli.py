@@ -3,15 +3,38 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import click
+import h5py
+import numpy as np
+
 if TYPE_CHECKING:
     from pyrxiv.datamodel import ArxivPaper
 
-import click
 
 from pyrxiv.download import ArxivDownloader
 from pyrxiv.extract import TextExtractor
 from pyrxiv.fetch import ArxivFetcher
 from pyrxiv.logger import logger
+
+
+def save_paper_to_hdf5(paper: "ArxivPaper", pdf_path: Path, hdf_path: Path) -> None:
+    """
+    Saves the arXiv paper metadata to an HDF5 file.
+
+    Args:
+        paper (ArxivPaper): The arXiv paper object containing metadata.
+        pdf_path (Path): The path to the PDF file of the arXiv paper.
+        hdf_path (Path): The path to the HDF5 file where the metadata will be saved.
+    """
+    with h5py.File(hdf_path, "a") as h5f:
+        group = paper.to_hdf5(hdf_file=h5f)
+        # Store PDF in the HDF5 file
+        with open(pdf_path, "rb") as f:
+            pdf_bytes = f.read()
+        # overwrite existing dataset
+        if "pdf" in group:
+            del group["pdf"]
+        group.create_dataset("pdf", data=np.void(pdf_bytes))
 
 
 def run_search_and_download(
@@ -95,15 +118,26 @@ def run_search_and_download(
                 # Deleting downloaded PDFS that do not match the regex pattern
                 regex = re.compile(regex_pattern) if regex_pattern else None
                 if regex and not regex.search(text):
-                    pdf_path.unlink()
                     continue
 
                 # If the paper matches the regex_pattern, store text in the corresponding ArxivPaper object
                 paper.text = text
+                paper.pdf_loader = loader
 
-                pattern_files.append(pdf_path)
+                # Save the paper metadata to an HDF5 file
+                hdf_path = download_path / f"{paper.id}.hdf5"
+                save_paper_to_hdf5(paper=paper, pdf_path=pdf_path, hdf_path=hdf_path)
+
+                # Deleting the PDF file after storing it in HDF5
+                pdf_path.unlink()
+
+                # Appending the HDF5 file and paper to the lists
+                pattern_files.append(hdf_path)
                 pattern_papers.append(paper)
                 bar.update(1)
+
+                if len(pattern_papers) >= n_papers:
+                    break
     return pattern_files, pattern_papers
 
 
