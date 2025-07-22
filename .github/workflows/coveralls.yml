@@ -11,6 +11,7 @@ permissions:
 
 env:
   UV_SYSTEM_PYTHON: true
+  PYRXIV_LOG_TO_FILE: "0"
 
 jobs:
   coveralls-test:

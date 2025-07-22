@@ -120,6 +120,10 @@ def run_search_and_download(
                 if regex and not regex.search(text):
                     pdf_path.unlink()
                     continue
+                logger.info(
+                    f"Paper {paper.id} matches the regex pattern: {regex_pattern}."
+                    " Storing metadata and text in an HDF5 file."
+                )
 
                 # If the paper matches the regex_pattern, store text in the corresponding ArxivPaper object
                 paper.text = text

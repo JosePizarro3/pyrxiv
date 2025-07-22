@@ -260,7 +260,8 @@ class ArxivFetcher:
                     )
                 )
 
-                self.logger.info(f"Paper {arxiv_id} fetched from arXiv.")
+                # ! too many messages, so I commented this out
+                # self.logger.info(f"Paper {arxiv_id} fetched from arXiv.")
 
                 # Making sure we do not exceed the number of papers to fetch
                 if len(papers) >= self.max_results:

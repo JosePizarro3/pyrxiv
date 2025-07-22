@@ -70,6 +70,7 @@ class ArxivPaper(BaseModel):
 
     def to_hdf5(self, hdf_file: h5py.File) -> h5py.Group:
         group = hdf_file.require_group(self.id)
+        sub_group = group.require_group("arxiv_paper")
         for key in self.model_fields:
             value = getattr(self, key)
             if key == "id":
@@ -79,8 +80,12 @@ class ArxivPaper(BaseModel):
             elif key == "authors":
                 value = [author.name for author in self.authors]
 
+            # Skip none values
+            if value is None:
+                continue
+
             # overwrite existing dataset
-            if key in group:
-                del group[key]
-            group.create_dataset(key, data=value)
+            if key in sub_group:
+                del sub_group[key]
+            sub_group.create_dataset(key, data=value)
         return group
