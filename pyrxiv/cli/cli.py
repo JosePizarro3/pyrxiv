@@ -118,6 +118,7 @@ def run_search_and_download(
                 # Deleting downloaded PDFS that do not match the regex pattern
                 regex = re.compile(regex_pattern) if regex_pattern else None
                 if regex and not regex.search(text):
+                    pdf_path.unlink()
                     continue
 
                 # If the paper matches the regex_pattern, store text in the corresponding ArxivPaper object
