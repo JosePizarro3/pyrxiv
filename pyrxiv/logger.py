@@ -1,6 +1,5 @@
 import copy
 import logging
-import sys
 
 import structlog
 
@@ -26,7 +25,9 @@ def store_log_message(_, __, event_dict):
 logging.basicConfig(
     level=logging.INFO,
     format="%(message)s",
-    stream=sys.stdout,
+    # stream=sys.stdout,
+    filename="./data/logs.json",
+    filemode="w",
 )
 
 
@@ -43,7 +44,8 @@ structlog.configure(
             ]
         ),
         store_log_message,
-        structlog.dev.ConsoleRenderer(),
+        # structlog.dev.ConsoleRenderer(),
+        structlog.processors.JSONRenderer(),
     ],
     logger_factory=structlog.stdlib.LoggerFactory(),  # Use stdlib logger backend
     wrapper_class=structlog.make_filtering_bound_logger(logging.DEBUG),

@@ -49,7 +49,8 @@ class ArxivDownloader:
                         if chunk:
                             f.write(chunk)
 
-            self.logger.info(f"PDF downloaded: {pdf_path}")
+            # ! too many messages, so I commented this out
+            # self.logger.info(f"PDF downloaded: {pdf_path}")
         except requests.exceptions.RequestException as e:
             self.logger.error(f"Failed to download PDF: {e}")
             pdf_path = None

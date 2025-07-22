@@ -179,6 +179,4 @@ artifacts
 tmp/
 
 # data folder
-data/*.pdf
-data/*.txt
-data/*.hdf5
+data*
