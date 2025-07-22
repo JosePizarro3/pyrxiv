@@ -1,5 +1,7 @@
 import copy
 import logging
+import os
+from pathlib import Path
 
 import structlog
 
@@ -20,6 +22,22 @@ def store_log_message(_, __, event_dict):
     log_storage.append(copy.deepcopy(event_dict))
     return event_dict
 
+
+log_to_file = os.getenv("PYRXIV_LOG_TO_FILE", "1") == "1"
+log_path = Path("./data/logs.json")
+
+if log_to_file and log_path.parent.exists():
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(message)s",
+        filename=log_path,
+        filemode="w",
+    )
+else:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(message)s",
+    )
 
 # Add this basic config to ensure logs go to stdout
 logging.basicConfig(
