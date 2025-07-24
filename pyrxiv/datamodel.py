@@ -69,23 +69,42 @@ class ArxivPaper(BaseModel):
     )
 
     def to_hdf5(self, hdf_file: h5py.File) -> h5py.Group:
+        """
+        Stores the ArxivPaper metadata and text dataset in an HDF5 file.
+
+        Args:
+            hdf_file (h5py.File): The HDF5 file to store the metadata and text.
+
+        Returns:
+            h5py.Group: The group in the HDF5 file where the metadata and text are stored.
+        """
         group = hdf_file.require_group(self.id)
         sub_group = group.require_group("arxiv_paper")
         for key in self.model_fields:
-            value = getattr(self, key)
             if key == "id":
                 continue
-            elif key in ["updated", "published"]:
+            value = getattr(self, key)
+            if key in ["updated", "published"]:
                 value = getattr(self, key).isoformat() if getattr(self, key) else None
-            elif key == "authors":
+            if key == "authors":
                 value = [author.name for author in self.authors]
 
             # Skip none values
             if value is None:
                 continue
 
-            # overwrite existing dataset
-            if key in sub_group:
-                del sub_group[key]
-            sub_group.create_dataset(key, data=value)
+            # overwrite existing dataset for `text`
+            if key == "text":
+                if key in sub_group:
+                    del sub_group[key]
+                sub_group.create_dataset(key, data=value.encode("utf-8"))
+                continue
+            # handle lists of strings
+            if isinstance(value, list) and all(isinstance(item, str) for item in value):
+                if key in sub_group:
+                    del sub_group[key]
+                sub_group.create_dataset(key, data=value)
+                continue
+            # all other attributes
+            sub_group.attrs[key] = value
         return group
